@@ -18,7 +18,15 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-// Time processing
+// Time processing without parameters
+app.get("/api", function (req, res) {
+  const date = new Date();
+  const unix = date.getTime();
+  const utc = date.toUTCString();
+  res.json({ unix, utc });
+});
+
+// Time processing with parameters
 app.get("/api/:time", function (req, res) {
   const { time } = req.params;
   let validatedTime = undefined;
@@ -28,8 +36,13 @@ app.get("/api/:time", function (req, res) {
     validatedTime = Number(time);
   }
   const date = new Date(validatedTime);
+  if (date.toString() === "Invalid Date") {
+    res.json({
+      error : "Invalid Date"
+    })
+  }
   const unix = date.getTime();
-  const utc = date.toString();
+  const utc = date.toUTCString();
   res.json({ unix, utc });
 });
 
